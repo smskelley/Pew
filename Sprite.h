@@ -12,10 +12,14 @@
 @interface Sprite : SKSpriteNode {
     MyScene *scene;
     CGPoint velocity;
+    CGFloat pixelGravity;
+    CGFloat pixelJumpVelocity;
 }
 
 @property (nonatomic) CGFloat maxSpeed;
 @property (nonatomic) CGFloat mass;
+@property (nonatomic) CGFloat gravity;
+@property (nonatomic) NSTimeInterval lastJump;
 
 // It is recommended that you use this initialization method. Parent Scene
 // needed for bounds checking.
@@ -25,8 +29,14 @@
 // Movement
 -(void) moveLeftWithDeltaT: (CFTimeInterval)deltat;
 -(void) moveRightWithDeltaT: (CFTimeInterval)deltat;
+
+// up/down should not be used directly with objects that also use jump/moveWithCurrentTime
 -(void) moveUpWithDeltaT: (CFTimeInterval)deltat;
 -(void) moveDownWithDeltaT: (CFTimeInterval)deltat;
+
+// more complicated movement functions that use velocity
+-(void) jumpWithCurrentTime: (CFTimeInterval)currentTime;
+-(void) moveWithCurrentTime: (CFTimeInterval)currentTime;
 
 // Basic utility methods, mostly to cut down on typing CGRectGetMaxX, etc.
 // Totally not needed, but a little useful.
@@ -38,7 +48,7 @@
 - (CGFloat) width;
 
 // Basic status methods
-// Yes if our character's feet are on the lowest point of the scene.
-- (BOOL) isOnGround;
+// Yes if our character's feet are *not* on the lowest point of the scene.
+- (BOOL) isInAir;
 
 @end

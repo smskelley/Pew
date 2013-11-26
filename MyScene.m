@@ -106,14 +106,15 @@
     if ([keyStates stateForKey:KEY_D]) // right
         [player moveRightWithDeltaT: deltat];
     if ([keyStates stateForKey:KEY_W]) // up
-        [player moveUpWithDeltaT: deltat];
-    if ([keyStates stateForKey:KEY_S]) // down
-        [player moveDownWithDeltaT: deltat];
-    if ([keyStates stateForKey:KEY_SPACE]) // down
+        [player jumpWithCurrentTime:currentTime];
+    if ([keyStates stateForKey:KEY_SPACE]) // shoot
     {
         [self incrementScore];
         [player fireWithCurrentTime:currentTime];
     }
+    
+    // apply gravity
+    [player moveWithCurrentTime:currentTime];
 }
 
 -(int)incrementScore {
