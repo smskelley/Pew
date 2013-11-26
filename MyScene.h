@@ -11,6 +11,7 @@
 @interface MyScene : SKScene
 
 @property (nonatomic) NSTimeInterval lastUpdateTimeInterval;
+@property (nonatomic) NSTimeInterval deltat;
 
 
 // Methods to define the area of the window that objects should reside

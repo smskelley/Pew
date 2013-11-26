@@ -21,10 +21,11 @@
 }
 
 @synthesize lastUpdateTimeInterval;
+@synthesize deltat;
 
 -(id)initWithSize:(CGSize)size {
     if (self = [super initWithSize:size]) {
-        score = 0;
+        score = deltat = lastUpdateTimeInterval = 0;
         keyStates = [[KeyStates alloc] init];
         self.backgroundColor = [SKColor colorWithRed:0.83 green:0.8 blue:0.81 alpha:1.0];
         
@@ -75,6 +76,9 @@
     return CGRectGetMaxY(self.frame);
 }
 
+/***********************************/
+/* User Interaction Event Handlers */
+/***********************************/
 -(void)mouseDown:(NSEvent *)theEvent {
      /* Called when a mouse click occurs */
     
@@ -94,15 +98,33 @@
     [keyStates setUp:[theEvent keyCode]];
 }
 
+/********************************************/
+/* Methods automatically called every frame */
+/********************************************/
+// perform basic actions
 -(void)update:(CFTimeInterval)currentTime {
-    CFTimeInterval deltat = currentTime - self.lastUpdateTimeInterval;
-    self.lastUpdateTimeInterval = currentTime;
+    deltat = currentTime - lastUpdateTimeInterval;
+    lastUpdateTimeInterval = currentTime;
     
-    [self movePlayerWithTimeDelta:deltat andCurrentTime:currentTime];
+    [self movePlayer];
 }
 
--(void)movePlayerWithTimeDelta:(CFTimeInterval)deltat
-                andCurrentTime:(CFTimeInterval)currentTime {
+// handle physics calculations
+-(void)didEvaluateActions {
+    // apply gravity on player
+    [player moveWithDeltaTime:deltat];
+}
+
+// perform actions after all physics calculations have completed
+-(void)didSimulatePhysics {
+    
+}
+
+/****************************************/
+/* Methods called manually once a frame */
+/****************************************/
+// Handle input to move player
+-(void)movePlayer {
     if ([keyStates stateForKey:KEY_A]) // left
         [player moveLeftWithDeltaT: deltat];
     if ([keyStates stateForKey:KEY_D]) // right
@@ -112,13 +134,13 @@
     if ([keyStates stateForKey:KEY_SPACE]) // shoot
     {
         [self incrementScore];
-        [player fireWithCurrentTime:currentTime];
+        [player fireWithCurrentTime:lastUpdateTimeInterval];
     }
-    
-    // apply gravity
-    [player moveWithDeltaTime:deltat];
 }
 
+/***************************/
+/* Handle score operations */
+/***************************/
 -(int)incrementScore {
     text.text = [NSString stringWithFormat:@"Score: %d", ++score];
     return score;
