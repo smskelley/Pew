@@ -34,10 +34,10 @@
         Sprite *bullet = [[Sprite alloc] initWithImageNamed:@"bullet1"
                                                    andScene:self.scene ];
         // Position it on the right side of the player
-        bullet.position = CGPointMake(CGRectGetMaxX(self.frame),
+        bullet.position = CGPointMake(CGRectGetMinX(self.frame),
                                       CGRectGetMidY(self.frame));
         bullet.scale = 0.2;
-        SKAction *flyRight =  [SKAction moveByX:1000 y:0.0 duration: 0.5];
+        SKAction *flyRight =  [SKAction moveByX:-1000 y:0.0 duration: 0.5];
         [self.scene addChild:bullet];
         [bullet runAction:flyRight];
     }
