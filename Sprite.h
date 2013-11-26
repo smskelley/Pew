@@ -20,9 +20,10 @@
 @property (nonatomic) CGFloat mass;
 @property (nonatomic) CGFloat gravity;
 
-// It is recommended that you use this initialization method. Parent Scene
+// It is recommended that you use these initialization methods. Parent Scene
 // needed for bounds checking.
 -(id) initWithImageNamed:(NSString *)name andScene:(SKScene *)parentScene;
+-(id) initWithTexture: (SKTexture *)texture andScene:(MyScene *)parentScene;
 
 
 // Movement

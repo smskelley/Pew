@@ -16,9 +16,12 @@
 @synthesize gravity;
 
 const float SPEEDUP_FACTOR = 160.0;
--(id) initWithImageNamed:(NSString *)name {
-    if ([super initWithImageNamed:name])
-    {
+
+/**************************/
+/* Initialization Methods */
+/**************************/
+-(id) init {
+    if ([super init]) {
         // setup defaults that may be overridden
         maxSpeed = 5;
         mass = 5;
@@ -31,11 +34,26 @@ const float SPEEDUP_FACTOR = 160.0;
     return self;
 }
 
--(id) initWithImageNamed:(NSString *)name
-                andScene:(MyScene *)parentScene {
-    self = [self initWithImageNamed:name];
+-(id) initWithImageNamed:(NSString *)name {
+    // setup base values and then initialize with image
+    if ([self init] && [super initWithImageNamed:name])
+    {
+    }
+    return self;
+}
+
+-(id) initWithImageNamed:(NSString *)name andScene:(MyScene *)parentScene {
+    if ([self initWithImageNamed:name]) {
+        scene = parentScene;
+    }
     
-    scene = parentScene;
+    return self;
+}
+
+-(id) initWithTexture: (SKTexture *)texture andScene:(MyScene *)parentScene {
+    if ([self init] && [super initWithTexture:texture]) {
+        scene = parentScene;
+    }
     
     return self;
 }
@@ -103,7 +121,9 @@ const float SPEEDUP_FACTOR = 160.0;
     }
 }
 
-// Simple helper methods, used to get the min/max X/Y
+/******************************************************/
+/* Simple helper methods, used to get the min/max X/Y */
+/******************************************************/
 - (CGFloat) minX {
     return CGRectGetMinX(self.frame);
 }
@@ -124,7 +144,7 @@ const float SPEEDUP_FACTOR = 160.0;
     return CGRectGetWidth(self.frame);
 }
 
-// within a small threshold
+// Returns yes if in air within a small threshold
 - (BOOL) isInAir{
     return [self minY] >= [scene minY] + 0.01;
 }
