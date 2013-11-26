@@ -12,14 +12,13 @@
 @interface Sprite : SKSpriteNode {
     MyScene *scene;
     CGPoint velocity;
-    CGFloat pixelGravity;
     CGFloat pixelJumpVelocity;
+    CGFloat jumpDeltaTMultiplier;
 }
 
 @property (nonatomic) CGFloat maxSpeed;
 @property (nonatomic) CGFloat mass;
 @property (nonatomic) CGFloat gravity;
-@property (nonatomic) NSTimeInterval lastJump;
 
 // It is recommended that you use this initialization method. Parent Scene
 // needed for bounds checking.
@@ -35,8 +34,8 @@
 -(void) moveDownWithDeltaT: (CFTimeInterval)deltat;
 
 // more complicated movement functions that use velocity
--(void) jumpWithCurrentTime: (CFTimeInterval)currentTime;
--(void) moveWithCurrentTime: (CFTimeInterval)currentTime;
+-(void) jump;
+-(void) moveWithDeltaTime: (CFTimeInterval)currentTime;
 
 // Basic utility methods, mostly to cut down on typing CGRectGetMaxX, etc.
 // Totally not needed, but a little useful.

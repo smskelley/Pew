@@ -14,7 +14,6 @@
 @synthesize maxSpeed;
 @synthesize mass;
 @synthesize gravity;
-@synthesize lastJump;
 
 const float SPEEDUP_FACTOR = 160.0;
 -(id) initWithImageNamed:(NSString *)name {
@@ -23,13 +22,11 @@ const float SPEEDUP_FACTOR = 160.0;
         // setup defaults that may be overridden
         maxSpeed = 5;
         mass = 5;
-        lastJump = 0;
-        // Pixels aren't the best metric for gravity, so define gravity based on the real world
-        // but convert the m/s^2 accel due to gravity into something meaningful in pixels.
+        velocity = CGPointMake(0.0,0.0);
         gravity = -9.81;
-        pixelGravity = gravity * 50; // pixels per second per second (50px = 1meter)
         // similarly, we need to base our initial upward velocity on realistic pixel values
-        pixelJumpVelocity = -gravity * 10;
+        pixelJumpVelocity = 55;
+        jumpDeltaTMultiplier = 20.0;
     }
     return self;
 }
@@ -47,14 +44,14 @@ const float SPEEDUP_FACTOR = 160.0;
 // Does not take into account gravity. Only takes into account basic scene bounds.
 // If the move goes out of bounds, move back into bounds.
 -(void) moveRightWithDeltaT: (CFTimeInterval)deltat {
-    self.position = CGPointMake(self.position.x + self.speed * SPEEDUP_FACTOR * deltat,
+    self.position = CGPointMake(self.position.x + self.maxSpeed * SPEEDUP_FACTOR * deltat,
                                 self.position.y);
     if ([self maxX] > [scene maxX])
         self.position = CGPointMake([scene maxX] - [self width]/2.0, self.position.y);
 }
 
 -(void) moveLeftWithDeltaT: (CFTimeInterval)deltat {
-    self.position = CGPointMake(self.position.x - self.speed * SPEEDUP_FACTOR * deltat,
+    self.position = CGPointMake(self.position.x - self.maxSpeed * SPEEDUP_FACTOR * deltat,
                                 self.position.y);
     if ([self minX] < [scene minX])
         self.position = CGPointMake([scene minX] + [self width] / 2, self.position.y);
@@ -62,14 +59,14 @@ const float SPEEDUP_FACTOR = 160.0;
 
 -(void) moveUpWithDeltaT: (CFTimeInterval)deltat {
     self.position = CGPointMake(self.position.x,
-                                self.position.y + self.speed * SPEEDUP_FACTOR * deltat);
+                                self.position.y + self.maxSpeed * SPEEDUP_FACTOR * deltat);
     if ([self maxY] > [scene maxY])
         self.position = CGPointMake(self.position.x, [scene maxY] - [self height]/2.0);
 }
 
 -(void) moveDownWithDeltaT: (CFTimeInterval)deltat {
     self.position = CGPointMake(self.position.x,
-                                self.position.y - self.speed * SPEEDUP_FACTOR * deltat);
+                                self.position.y - self.maxSpeed * SPEEDUP_FACTOR * deltat);
     if ([self minY] < [scene minY])
         self.position = CGPointMake(self.position.x, [scene minY] + [self height] / 2.0);
 }
@@ -77,29 +74,32 @@ const float SPEEDUP_FACTOR = 160.0;
 // Complex movements
 // Jump with height based on maxSpeed. This is a velocity based movement, so changes in positions
 // must be calculated each frame by calling moveWithDeltaT:
--(void) jumpWithCurrentTime: (CFTimeInterval)currentTime {
-    velocity = CGPointMake(velocity.x, velocity.y + maxSpeed);
-    lastJump = currentTime;
-    
-    // move instantly a few pixels upwards so that the physics of jumping takes effect
-    self.position = CGPointMake(self.position.x, self.position.y + 1);
+-(void) jump {
+    // single jumps only...
+    if (![self isInAir])
+    {
+        velocity = CGPointMake(velocity.x, velocity.y + pixelJumpVelocity);
+    }
 }
 
--(void) moveWithCurrentTime: (CFTimeInterval)currentTime {
-    CFTimeInterval deltat = currentTime - lastJump;
-    if ([self isInAir] && lastJump != 0)
+-(void) moveWithDeltaTime: (CFTimeInterval)deltat {
+    deltat *= jumpDeltaTMultiplier;
+    if ([self isInAir] || velocity.y > 0)
     {
-        NSLog(@"Before gravity y = %f, deltat = %f", self.position.y, deltat);
         // apply gravity
         self.position = CGPointMake(self.position.x,
                                     self.position.y                     // initial position
-                                    + pixelJumpVelocity * deltat                 // plus initial upward vel
-                                    + 0.5 * pixelGravity * deltat * deltat   // and accel due to gravity
+                                    + velocity.y * deltat                 // plus initial upward vel
+                                    + 0.5 * gravity * deltat * deltat   // and accel due to gravity
                                     );
+        // Adjust velocity
+        velocity = CGPointMake(velocity.x, velocity.y + gravity * deltat);
         // make sure gravity didn't take us through the ground
         if ([self minY] < [scene minY])
             self.position = CGPointMake(self.position.x, [scene minY] + [self height] / 2.0);
-        NSLog(@"After gravity y = %f", self.position.y);
+    }
+    else { // if not in the air, make sure velocity is 0.
+        velocity = CGPointMake(0.0, 0.0);
     }
 }
 

@@ -28,12 +28,7 @@
         keyStates = [[KeyStates alloc] init];
         self.backgroundColor = [SKColor colorWithRed:0.83 green:0.8 blue:0.81 alpha:1.0];
         
-        // setup player
-        player = [[Player alloc] initWithImageNamed:@"dude"
-                                           andScene:self ];
-        player.position = CGPointMake(CGRectGetMidX(self.frame),
-                                      CGRectGetMidY(self.frame));
-        player.scale = 0.2;
+        
         player.speed = 10;
         
         // setup ground
@@ -43,6 +38,13 @@
                                       CGRectGetMinY(self.frame) +
                                       CGRectGetHeight(ground.frame) / 2.0);
         
+        // setup player
+        player = [[Player alloc] initWithImageNamed:@"monster1"
+                                           andScene:self ];
+        player.scale = 0.2;
+        player.position = CGPointMake(CGRectGetMidX(self.frame),
+                                      [self minY] + [player height] / 2.0);
+        player.maxSpeed = 8;
         
         // setup text
         text = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
@@ -106,7 +108,7 @@
     if ([keyStates stateForKey:KEY_D]) // right
         [player moveRightWithDeltaT: deltat];
     if ([keyStates stateForKey:KEY_W]) // up
-        [player jumpWithCurrentTime:currentTime];
+        [player jump];
     if ([keyStates stateForKey:KEY_SPACE]) // shoot
     {
         [self incrementScore];
@@ -114,7 +116,7 @@
     }
     
     // apply gravity
-    [player moveWithCurrentTime:currentTime];
+    [player moveWithDeltaTime:deltat];
 }
 
 -(int)incrementScore {
