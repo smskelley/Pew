@@ -79,7 +79,7 @@
      /* Called when a mouse click occurs */
     
     CGPoint location = [theEvent locationInNode:self];
-    Sprite *monster = [[Sprite alloc] initWithImageNamed:@"monster1"
+    Sprite *monster = [[Sprite alloc] initWithImageNamed:@"dude"
                                        andScene:self ];
     monster.position = location;
     monster.scale = 0.2;
