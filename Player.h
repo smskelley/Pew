@@ -9,6 +9,7 @@
 #import "Sprite.h"
 
 @interface Player : Sprite {
+    SKTexture *bulletTexture;
 }
 
 @property (nonatomic) NSTimeInterval lastBulletSpawn;

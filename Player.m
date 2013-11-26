@@ -9,17 +9,17 @@
 #import "Player.h"
 
 @implementation Player {
-    
 }
 
 @synthesize lastBulletSpawn;
 @synthesize bulletsPerSecond;
 
 -(id) initWithImageNamed:(NSString *)name
-                andScene:(SKScene *)parentScene {
+                andScene:(SKScene*)parentScene {
     if (self = [super initWithImageNamed:name andScene:parentScene]) {
         lastBulletSpawn = 0;
         bulletsPerSecond = 10.0;
+        bulletTexture = [SKTexture textureWithImageNamed:@"bullet1"];
     }
     
     return self;
@@ -31,8 +31,8 @@
         // Fire the bullet
         lastBulletSpawn = currentTime;
         // Create the bullet
-        Sprite *bullet = [[Sprite alloc] initWithImageNamed:@"bullet1"
-                                                   andScene:self.scene ];
+        Sprite *bullet = [[Sprite alloc] initWithTexture:bulletTexture
+                                                   andScene:scene ];
         // Position it on the right side of the player
         bullet.position = CGPointMake(CGRectGetMinX(self.frame),
                                       CGRectGetMidY(self.frame));
