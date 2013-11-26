@@ -37,4 +37,8 @@
 - (CGFloat) height;
 - (CGFloat) width;
 
+// Basic status methods
+// Yes if our character's feet are on the lowest point of the scene.
+- (BOOL) isOnGround;
+
 @end

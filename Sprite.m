@@ -35,7 +35,8 @@ const float SPEEDUP_FACTOR = 160.0;
 }
 
 // Move in the given direction based on the amount of time that has passed.
-// If the move goes out of bounds, move into bounds.
+// Does not take into account gravity. Only takes into account basic scene bounds.
+// If the move goes out of bounds, move back into bounds.
 -(void) moveRightWithDeltaT: (CFTimeInterval)deltat {
     self.position = CGPointMake(self.position.x + self.speed * SPEEDUP_FACTOR * deltat,
                                 self.position.y);
@@ -77,10 +78,16 @@ const float SPEEDUP_FACTOR = 160.0;
 - (CGFloat) maxY {
     return CGRectGetMaxY(self.frame);
 }
+
 - (CGFloat) height {
     return CGRectGetHeight(self.frame);
 }
 - (CGFloat) width {
     return CGRectGetWidth(self.frame);
 }
+
+- (BOOL) isOnGround {
+    return [self minY] <= [scene minY];
+}
+
 @end
