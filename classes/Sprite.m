@@ -58,6 +58,12 @@ const float SPEEDUP_FACTOR = 160.0;
     return self;
 }
 
+// move without bounds check
+-(void) moveRightWithoutBoundsWithDeltaT: (CFTimeInterval)deltat {
+    self.position = CGPointMake(self.position.x + self.maxSpeed * SPEEDUP_FACTOR * deltat,
+                                self.position.y);
+}
+
 // Move in the given direction based on the amount of time that has passed.
 // Does not take into account gravity. Only takes into account basic scene bounds.
 // If the move goes out of bounds, move back into bounds.
@@ -100,7 +106,7 @@ const float SPEEDUP_FACTOR = 160.0;
     }
 }
 
--(void) moveWithDeltaTime: (CFTimeInterval)deltat {
+-(void) applyGravityWithDeltaT: (CFTimeInterval)deltat {
     deltat *= jumpDeltaTMultiplier;
     if ([self isInAir] || velocity.y > 0)
     {
@@ -142,6 +148,10 @@ const float SPEEDUP_FACTOR = 160.0;
 }
 - (CGFloat) width {
     return CGRectGetWidth(self.frame);
+}
+
+- (BOOL) isInFrame: (CGRect)otherFrame {
+    return CGRectIntersectsRect(self.frame, otherFrame);
 }
 
 // Returns yes if in air within a small threshold

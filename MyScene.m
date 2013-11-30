@@ -10,10 +10,13 @@
 #import "KeyStates.h"
 #import "Sprite.h"
 #import "Player.h"
+#import "Enemy.h"
 
 @implementation MyScene
 {
     Player *player;
+    Enemy *enemy;
+    CGFloat enemySpawnTimeFrequency;
     Sprite *ground;
     SKLabelNode *text;
     KeyStates *keyStates;
@@ -21,11 +24,16 @@
 }
 
 @synthesize lastUpdateTimeInterval;
+@synthesize lastSpawnTimeInterval;
 @synthesize deltat;
 
 -(id)initWithSize:(CGSize)size {
     if (self = [super initWithSize:size]) {
-        score = deltat = lastUpdateTimeInterval = 0;
+        // don't create the enemy in the initialization, allow them to be spawned naturally.
+        enemy = nil;
+        enemySpawnTimeFrequency = 10.0;
+        
+        score = deltat = lastUpdateTimeInterval = lastSpawnTimeInterval = 0;
         keyStates = [[KeyStates alloc] init];
         self.backgroundColor = [SKColor colorWithRed:0.83 green:0.8 blue:0.81 alpha:1.0];
         
@@ -46,7 +54,7 @@
         player.position = CGPointMake(CGRectGetMidX(self.frame),
                                       [self minY] + [player height] / 2.0);
         player.maxSpeed = 8;
-        
+       
         // setup text
         text = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
         text.text = @"Score: 0";
@@ -54,13 +62,24 @@
         text.position = CGPointMake(CGRectGetMidX(self.frame),
                                     CGRectGetMaxY(self.frame) -
                                     CGRectGetHeight(text.frame));
-        
         [self addChild:ground];
         [self addChild:text];
         [self addChild:player];
     }
     return self;
 }
+
+- (void) spawnNewEnemy {
+    // setup Enemy
+    enemy = [[Enemy alloc] initWithImageNamed:@"dude"
+                                       andScene:self ];
+    enemy.scale = 0.2;
+    enemy.position = CGPointMake([self minX] + [enemy width] / 2.0,
+                                 [self minY] + [enemy height] / 2.0);
+    enemy.maxSpeed = 1.0;
+    [self addChild:enemy];
+}
+
 
 // lowest/highest point something should occupy. Takes into account ground.
 - (CGFloat) minX {
@@ -107,17 +126,26 @@
     lastUpdateTimeInterval = currentTime;
     
     [self movePlayer];
+    
+    if (enemy != nil)
+        [enemy moveWithDeltaT:deltat];
+    
+    if (lastSpawnTimeInterval + enemySpawnTimeFrequency < currentTime) {
+        lastSpawnTimeInterval = currentTime;
+        [self spawnNewEnemy];
+    }
 }
 
 // handle physics calculations
 -(void)didEvaluateActions {
     // apply gravity on player
-    [player moveWithDeltaTime:deltat];
+    [player applyGravityWithDeltaT:deltat];
+    [enemy applyGravityWithDeltaT:deltat];
 }
 
 // perform actions after all physics calculations have completed
 -(void)didSimulatePhysics {
-    
+    [enemy decideAndDoWithCurrentTime:lastUpdateTimeInterval];
 }
 
 /****************************************/
@@ -134,7 +162,7 @@
     if ([keyStates stateForKey:KEY_SPACE]) // shoot
     {
         [self incrementScore];
-        [player fireWithCurrentTime:lastUpdateTimeInterval];
+        [player fireLeftWithCurrentTime:lastUpdateTimeInterval];
     }
 }
 

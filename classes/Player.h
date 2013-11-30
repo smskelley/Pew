@@ -14,9 +14,11 @@
 
 @property (nonatomic) NSTimeInterval lastBulletSpawn;
 @property (nonatomic) float bulletsPerSecond;
+@property (nonatomic) float bulletSpeed;
 
 -(id) initWithImageNamed:(NSString *)name andScene:(SKScene *)parentScene;
 
-- (void) fireWithCurrentTime: (NSTimeInterval) currentTime;
+- (void) fireLeftWithCurrentTime: (NSTimeInterval) currentTime;
+- (void) fireRightWithCurrentTime: (NSTimeInterval) currentTime;
 
 @end

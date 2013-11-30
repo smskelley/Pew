@@ -26,6 +26,9 @@
 -(id) initWithTexture: (SKTexture *)texture andScene:(MyScene *)parentScene;
 
 
+// move without bounds check
+-(void) moveRightWithoutBoundsWithDeltaT: (CFTimeInterval)deltat;
+
 // Movement
 -(void) moveLeftWithDeltaT: (CFTimeInterval)deltat;
 -(void) moveRightWithDeltaT: (CFTimeInterval)deltat;
@@ -36,7 +39,7 @@
 
 // more complicated movement functions that use velocity
 -(void) jump;
--(void) moveWithDeltaTime: (CFTimeInterval)currentTime;
+-(void) applyGravityWithDeltaT: (CFTimeInterval)currentTime;
 
 // Basic utility methods, mostly to cut down on typing CGRectGetMaxX, etc.
 // Totally not needed, but a little useful.
@@ -46,6 +49,7 @@
 - (CGFloat) maxY;
 - (CGFloat) height;
 - (CGFloat) width;
+- (BOOL) isInFrame: (CGRect)otherFrame;
 
 // Basic status methods
 // Yes if our character's feet are *not* on the lowest point of the scene.
