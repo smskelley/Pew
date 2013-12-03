@@ -24,6 +24,11 @@
         bulletsPerSecond = 10.0;
         bulletSpeed = 0.5;
         bulletTexture = [SKTexture textureWithImageNamed:@"bullet1"];
+        // setup sounds
+        playProjectileSound = [SKAction playSoundFileNamed:@"pew.mp3"
+                                         waitForCompletion:NO];
+        playHitSound = [SKAction playSoundFileNamed:@"punch.mp3"
+                                  waitForCompletion:NO];
     }
     
     return self;
@@ -45,6 +50,7 @@
         SKAction *flyRight =  [SKAction moveByX:1000 y:0.0 duration: bulletSpeed];
         [self.scene addChild:bullet];
         [bullet runAction:flyRight];
+        [self runAction:playProjectileSound];
     }
 }
 
@@ -63,6 +69,7 @@
         SKAction *flyRight =  [SKAction moveByX:-1000 y:0.0 duration: bulletSpeed];
         [self.scene addChild:bullet];
         [bullet runAction:flyRight];
+        [self runAction:playProjectileSound];
     }
 }
 
@@ -75,6 +82,7 @@
 }
 
 - (void) wasHit {
+    [self runAction:playHitSound];
     --lives;
 }
 

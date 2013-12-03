@@ -11,6 +11,8 @@
 @interface Player : Sprite {
     SKTexture *bulletTexture;
     BOOL alive;
+    SKAction *playProjectileSound;
+    SKAction *playHitSound;
 }
 
 @property (nonatomic) NSTimeInterval lastBulletSpawn;
