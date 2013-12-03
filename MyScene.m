@@ -171,7 +171,11 @@
     if (!self.paused) {
         //check for collision between enemy and player
         [self enumerateChildNodesWithName:@"enemy" usingBlock:^(SKNode *enemy, BOOL *stop) {
-            if ([player isInFrame:enemy.frame]) {
+            // make sure the enemy is still in the scene's frame, if it isn't, remove it
+            if (!CGRectIntersectsRect(enemy.frame, self.frame))
+                [enemy removeFromParent];
+            // now check for collision
+            else if ([player isInFrame:enemy.frame]) {
                 [enemy removeFromParent];
                 [self incrementScore];
             }
@@ -179,7 +183,11 @@
         
         //check for collision between player and bullets
         [self enumerateChildNodesWithName:@"bullet" usingBlock:^(SKNode *node, BOOL *stop) {
-            if ([player isInFrame:node.frame]) {
+            // make sure bullet still in frame
+            if (!CGRectIntersectsRect(node.frame, self.frame))
+                [node removeFromParent];
+            // Then check for collision with the player
+            else if ([player isInFrame:node.frame]) {
                 NSLog(@"Player was hit by bullet!");
                 [player wasHit];
                 [self updateLivesText];
