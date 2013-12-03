@@ -39,6 +39,7 @@
         bullet.position = CGPointMake(CGRectGetMaxX(self.frame),
                                       CGRectGetMidY(self.frame));
         bullet.scale = 0.2;
+        bullet.name = @"bullet";
         SKAction *flyRight =  [SKAction moveByX:1000 y:0.0 duration: bulletSpeed];
         [self.scene addChild:bullet];
         [bullet runAction:flyRight];

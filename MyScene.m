@@ -148,11 +148,20 @@
 
 // perform actions after all physics calculations have completed
 -(void)didSimulatePhysics {
+    //check for collision between enemy and player
     if ([player isInFrame:enemy.frame] && [enemy isAlive]) {
         [enemy die];
         [enemy removeFromParent];
         [self incrementScore];
     }
+    
+    //check for collision between player and bullets
+    [self enumerateChildNodesWithName:@"bullet" usingBlock:^(SKNode *node, BOOL *stop) {
+        if ([player isInFrame:node.frame]) {
+            NSLog(@"Player was hit by bullet!");
+            [node removeFromParent];
+        }
+    }];
 }
 
 /****************************************/
