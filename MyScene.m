@@ -15,7 +15,6 @@
 @implementation MyScene
 {
     Player *player;
-    Enemy *enemy;
     CGFloat enemySpawnTimeFrequency;
     Sprite *ground;
     SKLabelNode *text;
@@ -30,8 +29,7 @@
 -(id)initWithSize:(CGSize)size {
     if (self = [super initWithSize:size]) {
         // don't create the enemy in the initialization, allow them to be spawned naturally.
-        enemy = nil;
-        enemySpawnTimeFrequency = 10.0;
+        enemySpawnTimeFrequency = 2.0;
         
         score = deltat = lastUpdateTimeInterval = lastSpawnTimeInterval = 0;
         keyStates = [[KeyStates alloc] init];
@@ -71,12 +69,13 @@
 
 - (void) spawnNewEnemy {
     // setup Enemy
-    enemy = [[Enemy alloc] initWithImageNamed:@"dude"
+    Enemy *enemy = [[Enemy alloc] initWithImageNamed:@"dude"
                                        andScene:self ];
     enemy.scale = 0.2;
     enemy.position = CGPointMake([self minX] + [enemy width] / 2.0,
                                  [self minY] + [enemy height] / 2.0);
     enemy.maxSpeed = 1.0;
+    enemy.name = @"enemy";
     [self addChild:enemy];
 }
 
@@ -128,10 +127,11 @@
     
     [self movePlayer];
     
-    if (enemy != nil) {
-        [enemy moveWithDeltaT:deltat];
-        [enemy decideAndDoWithCurrentTime:lastUpdateTimeInterval];
-    }
+    // Move all enemies
+    [self enumerateChildNodesWithName:@"enemy" usingBlock:^(SKNode *enemy, BOOL *stop) {
+        [(Enemy*)enemy moveWithDeltaT:deltat];
+        [(Enemy*)enemy decideAndDoWithCurrentTime:lastUpdateTimeInterval];
+    }];
     
     if (lastSpawnTimeInterval + enemySpawnTimeFrequency < currentTime) {
         lastSpawnTimeInterval = currentTime;
@@ -143,17 +143,20 @@
 -(void)didEvaluateActions {
     // apply gravity on player
     [player applyGravityWithDeltaT:deltat];
-    [enemy applyGravityWithDeltaT:deltat];
+    [self enumerateChildNodesWithName:@"enemy" usingBlock:^(SKNode *enemy, BOOL *stop) {
+        [(Enemy*)enemy applyGravityWithDeltaT:deltat];
+    }];
 }
 
 // perform actions after all physics calculations have completed
 -(void)didSimulatePhysics {
     //check for collision between enemy and player
-    if ([player isInFrame:enemy.frame] && [enemy isAlive]) {
-        [enemy die];
-        [enemy removeFromParent];
-        [self incrementScore];
-    }
+    [self enumerateChildNodesWithName:@"enemy" usingBlock:^(SKNode *enemy, BOOL *stop) {
+        if ([player isInFrame:enemy.frame]) {
+            [enemy removeFromParent];
+            [self incrementScore];
+        }
+    }];
     
     //check for collision between player and bullets
     [self enumerateChildNodesWithName:@"bullet" usingBlock:^(SKNode *node, BOOL *stop) {
