@@ -16,6 +16,7 @@
         targets = [[NSMutableArray alloc] init];
         self.bulletsPerSecond = 0.5;
         self.bulletSpeed = 2.5;
+        alive = YES;
     }
     return self;
 }
@@ -34,5 +35,13 @@
 
 -(void) addTarget: (Player *)target {
     [targets addObject:target];
+}
+
+-(void) die {
+    alive = NO;
+}
+
+-(BOOL) isAlive {
+    return alive;
 }
 @end

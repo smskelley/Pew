@@ -107,6 +107,7 @@
     monster.position = location;
     monster.scale = 0.2;
     [self addChild:monster];
+    
 }
 
 -(void)keyDown:(NSEvent *)theEvent {
@@ -127,8 +128,10 @@
     
     [self movePlayer];
     
-    if (enemy != nil)
+    if (enemy != nil) {
         [enemy moveWithDeltaT:deltat];
+        [enemy decideAndDoWithCurrentTime:lastUpdateTimeInterval];
+    }
     
     if (lastSpawnTimeInterval + enemySpawnTimeFrequency < currentTime) {
         lastSpawnTimeInterval = currentTime;
@@ -145,7 +148,11 @@
 
 // perform actions after all physics calculations have completed
 -(void)didSimulatePhysics {
-    [enemy decideAndDoWithCurrentTime:lastUpdateTimeInterval];
+    if ([player isInFrame:enemy.frame] && [enemy isAlive]) {
+        [enemy die];
+        [enemy removeFromParent];
+        [self incrementScore];
+    }
 }
 
 /****************************************/
@@ -160,10 +167,7 @@
     if ([keyStates stateForKey:KEY_W]) // up
         [player jump];
     if ([keyStates stateForKey:KEY_SPACE]) // shoot
-    {
-        [self incrementScore];
         [player fireLeftWithCurrentTime:lastUpdateTimeInterval];
-    }
 }
 
 /***************************/
