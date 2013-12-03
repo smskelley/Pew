@@ -15,10 +15,10 @@
     CGFloat pixelJumpVelocity;
     CGFloat jumpDeltaTMultiplier;
 }
-
 @property (nonatomic) CGFloat maxSpeed;
 @property (nonatomic) CGFloat mass;
 @property (nonatomic) CGFloat gravity;
+@property (nonatomic) CGFloat SPEEDUP_FACTOR;
 
 // It is recommended that you use these initialization methods. Parent Scene
 // needed for bounds checking.

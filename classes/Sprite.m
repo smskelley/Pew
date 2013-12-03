@@ -14,8 +14,7 @@
 @synthesize maxSpeed;
 @synthesize mass;
 @synthesize gravity;
-
-const float SPEEDUP_FACTOR = 160.0;
+@synthesize SPEEDUP_FACTOR;
 
 /**************************/
 /* Initialization Methods */
@@ -27,6 +26,7 @@ const float SPEEDUP_FACTOR = 160.0;
         mass = 5;
         velocity = CGPointMake(0.0,0.0);
         gravity = -9.81;
+        SPEEDUP_FACTOR = 160.0;
         // similarly, we need to base our initial upward velocity on realistic pixel values
         pixelJumpVelocity = 55;
         jumpDeltaTMultiplier = 20.0;
