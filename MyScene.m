@@ -37,8 +37,6 @@
         self.backgroundColor = [SKColor colorWithRed:0.83 green:0.8 blue:0.81 alpha:1.0];
         
         
-        player.speed = 10;
-        
         // setup ground
         ground = [[Sprite alloc] initWithImageNamed:@"ground" andScene:self];
         ground.scale = 0.4;
@@ -123,6 +121,8 @@
 
 -(void)keyDown:(NSEvent *)theEvent {
     [keyStates setDown:[theEvent keyCode]];
+    if ([theEvent keyCode] == KEY_DELETE)
+        [self restartGame];
 }
 
 -(void)keyUp:(NSEvent *)theEvent {
@@ -188,11 +188,10 @@
                 [node removeFromParent];
             // Then check for collision with the player
             else if ([player isInFrame:node.frame]) {
-                NSLog(@"Player was hit by bullet!");
                 [player wasHit];
                 [self updateLivesText];
                 if (player.lives == 0)
-                    self.paused = YES;
+                    [self gameOver];
                 [node removeFromParent];
             }
         }];
@@ -225,6 +224,24 @@
 -(int)updateLivesText {
     livesText.text = [NSString stringWithFormat:@"Lives: %d", player.lives];
     return player.lives;
+}
+
+/*************************/
+/* Game state operations */
+/*************************/
+-(void)gameOver {
+    SKLabelNode* gameOverText = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
+    gameOverText.fontSize = 35;
+    gameOverText.text = @"Game Over. Press Delete to Restart";
+    gameOverText.position = CGPointMake(CGRectGetMidX(self.frame),
+                                        CGRectGetMidY(self.frame));
+    [self addChild:gameOverText];
+    self.paused = YES;
+}
+-(void)restartGame {
+    SKScene *thisScene = [[MyScene alloc] initWithSize:self.size];
+    SKTransition *door = [SKTransition doorsOpenHorizontalWithDuration:1.0];
+    [self.view presentScene:thisScene transition:door];
 }
 
 @end
