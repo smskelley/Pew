@@ -13,7 +13,7 @@
 // Initialization
 -(id) initWithImageNamed:(NSString *)name andScene:(SKScene *)parentScene {
     if (self = [super initWithImageNamed:name andScene:parentScene]) {
-        targets = [[NSMutableArray alloc] init];
+        target = nil;
         self.bulletsPerSecond = 0.5;
         self.bulletSpeed = 2.5;
         alive = YES;
@@ -33,8 +33,8 @@
     [self fireRightWithCurrentTime:currentTime];
 }
 
--(void) addTarget: (Player *)target {
-    [targets addObject:target];
+-(void) addTarget: (Player *)newTarget {
+    target = newTarget;
 }
 
 @end

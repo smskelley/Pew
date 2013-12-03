@@ -10,7 +10,7 @@
 
 // Enemies have all abilities that players do, but they also have AI
 @interface Enemy : Player {
-    NSMutableArray *targets;
+    Player *target;
 }
 
 // Initialization

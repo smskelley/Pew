@@ -92,6 +92,7 @@
     enemy.bulletSpeed = (CGRectGetWidth(self.frame) / (enemy.maxSpeed * enemy.SPEEDUP_FACTOR)) * 0.5;
     enemy.bulletsPerSecond = 0.5 + enemiesSpawned * 0.1 * difficultyRamp;
     enemy.name = @"enemy";
+    [enemy addTarget:player];
     [self addChild:enemy];
     enemiesSpawned++;
     
@@ -234,6 +235,10 @@
 /**************************/
 -(int)incrementScore {
     scoreText.text = [NSString stringWithFormat:@"Score: %d", ++score];
+    scoreText.position = CGPointMake(CGRectGetMinX(self.frame) + 20
+                                     + CGRectGetWidth(scoreText.frame) * .5,
+                                     CGRectGetMaxY(self.frame)
+                                     - CGRectGetHeight(scoreText.frame));
     return score;
 }
 -(int)updateLivesText {
