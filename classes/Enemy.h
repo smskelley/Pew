@@ -11,7 +11,6 @@
 // Enemies have all abilities that players do, but they also have AI
 @interface Enemy : Player {
     NSMutableArray *targets;
-    BOOL alive;
 }
 
 // Initialization
@@ -21,7 +20,5 @@
 -(void) moveWithDeltaT: (CFTimeInterval) deltat;
 -(void) decideAndDoWithCurrentTime: (CFTimeInterval) currentTime;
 -(void) addTarget: (Player *)target;
--(void) die;
--(BOOL) isAlive;
 
 @end

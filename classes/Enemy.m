@@ -37,11 +37,4 @@
     [targets addObject:target];
 }
 
--(void) die {
-    alive = NO;
-}
-
--(BOOL) isAlive {
-    return alive;
-}
 @end

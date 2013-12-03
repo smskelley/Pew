@@ -14,10 +14,12 @@
 @synthesize lastBulletSpawn;
 @synthesize bulletsPerSecond;
 @synthesize bulletSpeed;
+@synthesize lives;
 
 -(id) initWithImageNamed:(NSString *)name
                 andScene:(SKScene*)parentScene {
     if (self = [super initWithImageNamed:name andScene:parentScene]) {
+        lives = 10;
         lastBulletSpawn = 0;
         bulletsPerSecond = 10.0;
         bulletSpeed = 0.5;
@@ -62,6 +64,18 @@
         [self.scene addChild:bullet];
         [bullet runAction:flyRight];
     }
+}
+
+-(void) die {
+    alive = NO;
+}
+
+-(BOOL) isAlive {
+    return alive;
+}
+
+- (void) wasHit {
+    --lives;
 }
 
 @end

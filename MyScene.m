@@ -17,7 +17,8 @@
     Player *player;
     CGFloat enemySpawnTimeFrequency;
     Sprite *ground;
-    SKLabelNode *text;
+    SKLabelNode *scoreText;
+    SKLabelNode *livesText;
     KeyStates *keyStates;
     int score;
 }
@@ -51,17 +52,28 @@
         player.scale = 0.2;
         player.position = CGPointMake(CGRectGetMidX(self.frame),
                                       [self minY] + [player height] / 2.0);
+        player.lives = 10;
         player.maxSpeed = 8;
        
-        // setup text
-        text = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
-        text.text = @"Score: 0";
-        text.fontSize = 65;
-        text.position = CGPointMake(CGRectGetMidX(self.frame),
-                                    CGRectGetMaxY(self.frame) -
-                                    CGRectGetHeight(text.frame));
+        // setup scoreText
+        scoreText = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
+        scoreText.fontSize = 65;
+        scoreText.text = @"Score: 0";
+        scoreText.position = CGPointMake(CGRectGetMinX(self.frame) + 20
+                                         + CGRectGetWidth(scoreText.frame) * .5,
+                                         CGRectGetMaxY(self.frame)
+                                         - CGRectGetHeight(scoreText.frame));
+        // setup livesText
+        livesText = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
+        livesText.fontSize = 65;
+        livesText.text = [NSString stringWithFormat:@"Lives %d",player.lives];
+        livesText.position = CGPointMake(CGRectGetMaxX(self.frame)
+                                         - CGRectGetWidth(livesText.frame),
+                                         CGRectGetMaxY(self.frame)
+                                         - CGRectGetHeight(livesText.frame));
         [self addChild:ground];
-        [self addChild:text];
+        [self addChild:scoreText];
+        [self addChild:livesText];
         [self addChild:player];
     }
     return self;
@@ -125,46 +137,59 @@
     deltat = currentTime - lastUpdateTimeInterval;
     lastUpdateTimeInterval = currentTime;
     
-    [self movePlayer];
-    
-    // Move all enemies
-    [self enumerateChildNodesWithName:@"enemy" usingBlock:^(SKNode *enemy, BOOL *stop) {
-        [(Enemy*)enemy moveWithDeltaT:deltat];
-        [(Enemy*)enemy decideAndDoWithCurrentTime:lastUpdateTimeInterval];
-    }];
-    
-    if (lastSpawnTimeInterval + enemySpawnTimeFrequency < currentTime) {
-        lastSpawnTimeInterval = currentTime;
-        [self spawnNewEnemy];
+    // perform actions only when scene is not paused
+    if (!self.paused) {
+        [self movePlayer];
+        
+        // Move all enemies
+        [self enumerateChildNodesWithName:@"enemy" usingBlock:^(SKNode *enemy, BOOL *stop) {
+            [(Enemy*)enemy moveWithDeltaT:deltat];
+            [(Enemy*)enemy decideAndDoWithCurrentTime:lastUpdateTimeInterval];
+        }];
+        
+        if (lastSpawnTimeInterval + enemySpawnTimeFrequency < currentTime) {
+            lastSpawnTimeInterval = currentTime;
+            [self spawnNewEnemy];
+        }
     }
 }
 
 // handle physics calculations
 -(void)didEvaluateActions {
-    // apply gravity on player
-    [player applyGravityWithDeltaT:deltat];
-    [self enumerateChildNodesWithName:@"enemy" usingBlock:^(SKNode *enemy, BOOL *stop) {
-        [(Enemy*)enemy applyGravityWithDeltaT:deltat];
-    }];
+    // apply gravity on player and enemies, only when scene is not paused
+    if (!self.paused) {
+        [player applyGravityWithDeltaT:deltat];
+        [self enumerateChildNodesWithName:@"enemy" usingBlock:^(SKNode *enemy, BOOL *stop) {
+            [(Enemy*)enemy applyGravityWithDeltaT:deltat];
+        }];
+    }
 }
 
 // perform actions after all physics calculations have completed
 -(void)didSimulatePhysics {
-    //check for collision between enemy and player
-    [self enumerateChildNodesWithName:@"enemy" usingBlock:^(SKNode *enemy, BOOL *stop) {
-        if ([player isInFrame:enemy.frame]) {
-            [enemy removeFromParent];
-            [self incrementScore];
-        }
-    }];
-    
-    //check for collision between player and bullets
-    [self enumerateChildNodesWithName:@"bullet" usingBlock:^(SKNode *node, BOOL *stop) {
-        if ([player isInFrame:node.frame]) {
-            NSLog(@"Player was hit by bullet!");
-            [node removeFromParent];
-        }
-    }];
+    // check for collisions only when scene is not paused
+    if (!self.paused) {
+        //check for collision between enemy and player
+        [self enumerateChildNodesWithName:@"enemy" usingBlock:^(SKNode *enemy, BOOL *stop) {
+            if ([player isInFrame:enemy.frame]) {
+                [enemy removeFromParent];
+                [self incrementScore];
+            }
+        }];
+        
+        //check for collision between player and bullets
+        [self enumerateChildNodesWithName:@"bullet" usingBlock:^(SKNode *node, BOOL *stop) {
+            if ([player isInFrame:node.frame]) {
+                NSLog(@"Player was hit by bullet!");
+                [player wasHit];
+                [self updateLivesText];
+                if (player.lives == 0)
+                    self.paused = YES;
+                [node removeFromParent];
+            }
+        }];
+    }
+    // remove children of scene if they're not within the scene's frame
 }
 
 /****************************************/
@@ -182,12 +207,16 @@
         [player fireLeftWithCurrentTime:lastUpdateTimeInterval];
 }
 
-/***************************/
-/* Handle score operations */
-/***************************/
+/**************************/
+/* Handle text operations */
+/**************************/
 -(int)incrementScore {
-    text.text = [NSString stringWithFormat:@"Score: %d", ++score];
+    scoreText.text = [NSString stringWithFormat:@"Score: %d", ++score];
     return score;
+}
+-(int)updateLivesText {
+    livesText.text = [NSString stringWithFormat:@"Lives: %d", player.lives];
+    return player.lives;
 }
 
 @end

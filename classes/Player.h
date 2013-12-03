@@ -10,15 +10,20 @@
 
 @interface Player : Sprite {
     SKTexture *bulletTexture;
+    BOOL alive;
 }
 
 @property (nonatomic) NSTimeInterval lastBulletSpawn;
 @property (nonatomic) float bulletsPerSecond;
 @property (nonatomic) float bulletSpeed;
+@property (nonatomic) int lives;
 
 -(id) initWithImageNamed:(NSString *)name andScene:(SKScene *)parentScene;
 
 - (void) fireLeftWithCurrentTime: (NSTimeInterval) currentTime;
 - (void) fireRightWithCurrentTime: (NSTimeInterval) currentTime;
+- (void) die;
+- (BOOL) isAlive;
+- (void) wasHit;
 
 @end
