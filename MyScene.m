@@ -16,6 +16,7 @@
 {
     Player *player;
     CGFloat enemySpawnTimeFrequency;
+    int enemiesSpawned;
     Sprite *ground;
     SKLabelNode *scoreText;
     SKLabelNode *livesText;
@@ -31,6 +32,7 @@
     if (self = [super initWithSize:size]) {
         // don't create the enemy in the initialization, allow them to be spawned naturally.
         enemySpawnTimeFrequency = 2.0;
+        enemiesSpawned = 0;
         
         score = deltat = lastUpdateTimeInterval = lastSpawnTimeInterval = 0;
         keyStates = [[KeyStates alloc] init];
@@ -81,12 +83,25 @@
     // setup Enemy
     Enemy *enemy = [[Enemy alloc] initWithImageNamed:@"dude"
                                        andScene:self ];
+    float difficultyRamp = 0.5;
     enemy.scale = 0.2;
     enemy.position = CGPointMake([self minX] + [enemy width] / 2.0,
                                  [self minY] + [enemy height] / 2.0);
-    enemy.maxSpeed = 1.0;
+    enemy.maxSpeed = 1.0 + enemiesSpawned * 0.5 * difficultyRamp;
+    // screen width / (self.maxSpeed * SPEEDUP_FACTOR) is time taken to traverse screen
+    enemy.bulletSpeed = (CGRectGetWidth(self.frame) / (enemy.maxSpeed * enemy.SPEEDUP_FACTOR)) * 0.5;
+    enemy.bulletsPerSecond = 0.5 + enemiesSpawned * 0.1 * difficultyRamp;
     enemy.name = @"enemy";
     [self addChild:enemy];
+    enemiesSpawned++;
+    
+    // limit maximum difficulty
+    enemy.maxSpeed = MIN(7.0, enemy.maxSpeed);
+    enemy.bulletsPerSecond = MIN(3.0, enemy.bulletsPerSecond);
+    enemySpawnTimeFrequency = MAX(0.7, enemySpawnTimeFrequency * 0.95);
+    
+    NSLog(@"#%d: maxSpeed: %f, bulletSpeed: %f, bulletsPerSecond: %f, frequency: %f",
+          enemiesSpawned, enemy.maxSpeed, enemy.bulletSpeed, enemy.bulletsPerSecond, enemySpawnTimeFrequency);
 }
 
 
