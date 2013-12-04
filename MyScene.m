@@ -230,10 +230,8 @@
         [player moveLeftWithDeltaT: deltat];
     if ([keyStates stateForKey:KEY_D]) // right
         [player moveRightWithDeltaT: deltat];
-    if ([keyStates stateForKey:KEY_W]) // up
+    if ([keyStates stateForKey:KEY_W] | [keyStates stateForKey:KEY_SPACE]) // jump
         [player jump];
-    if ([keyStates stateForKey:KEY_SPACE]) // shoot
-        [player fireLeftWithCurrentTime:lastUpdateTimeInterval];
 }
 
 /**************************/
