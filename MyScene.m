@@ -22,6 +22,7 @@
     SKLabelNode *livesText;
     KeyStates *keyStates;
     int score;
+    SKAction *playLossSound;
 }
 
 @synthesize lastUpdateTimeInterval;
@@ -33,6 +34,10 @@
         // don't create the enemy in the initialization, allow them to be spawned naturally.
         enemySpawnTimeFrequency = 2.0;
         enemiesSpawned = 0;
+        
+        // setup sounds
+        playLossSound = [SKAction playSoundFileNamed:@"yougetnothing.mp3"
+                                   waitForCompletion:NO];
         
         score = deltat = lastUpdateTimeInterval = lastSpawnTimeInterval = 0;
         keyStates = [[KeyStates alloc] init];
@@ -194,6 +199,7 @@
             else if ([player isInFrame:enemy.frame]) {
                 [enemy removeFromParent];
                 [self incrementScore];
+                [player hitEnemy];
             }
         }];
         
@@ -256,7 +262,9 @@
     gameOverText.position = CGPointMake(CGRectGetMidX(self.frame),
                                         CGRectGetMidY(self.frame));
     [self addChild:gameOverText];
-    self.paused = YES;
+    [self runAction:[SKAction sequence:@[ playLossSound,
+                                          [SKAction runBlock:^{ self.paused = YES; }]
+                                        ]]];
 }
 -(void)restartGame {
     SKScene *thisScene = [[MyScene alloc] initWithSize:self.size];

@@ -12,7 +12,8 @@
     SKTexture *bulletTexture;
     BOOL alive;
     SKAction *playProjectileSound;
-    SKAction *playHitSound;
+    SKAction *playIncomingHitSound;
+    SKAction *playOutgoingHitSound;
 }
 
 @property (nonatomic) NSTimeInterval lastBulletSpawn;
@@ -27,5 +28,6 @@
 - (void) die;
 - (BOOL) isAlive;
 - (void) wasHit;
+- (void) hitEnemy;
 
 @end

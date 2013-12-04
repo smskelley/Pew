@@ -27,8 +27,10 @@
         // setup sounds
         playProjectileSound = [SKAction playSoundFileNamed:@"pew.mp3"
                                          waitForCompletion:NO];
-        playHitSound = [SKAction playSoundFileNamed:@"punch.mp3"
-                                  waitForCompletion:NO];
+        playIncomingHitSound = [SKAction playSoundFileNamed:@"ow.mp3"
+                                          waitForCompletion:NO];
+        playOutgoingHitSound = [SKAction playSoundFileNamed:@"punch.mp3"
+                                          waitForCompletion:NO];
     }
     
     return self;
@@ -81,8 +83,12 @@
     return alive;
 }
 
+- (void) hitEnemy {
+    [self runAction:playOutgoingHitSound];
+}
+
 - (void) wasHit {
-    [self runAction:playHitSound];
+    [self runAction:playIncomingHitSound];
     --lives;
 }
 
