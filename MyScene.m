@@ -46,10 +46,16 @@
         
         // setup ground
         ground = [[Sprite alloc] initWithImageNamed:@"ground" andScene:self];
-        ground.scale = 0.4;
+        ground.scale = 1.9;
         ground.position = CGPointMake(CGRectGetMidX(self.frame),
                                       CGRectGetMinY(self.frame) +
                                       CGRectGetHeight(ground.frame) / 2.0);
+        // setup ground
+        Sprite *bg= [[Sprite alloc] initWithImageNamed:@"bg" andScene:self];
+        bg.scale = 1.9;
+        bg.position = CGPointMake(CGRectGetMidX(self.frame),
+                                      CGRectGetMaxY(ground.frame) +
+                                      CGRectGetHeight(bg.frame) / 2.0);
         
         // setup player
         player = [[Player alloc] initWithImageNamed:@"monster1"
@@ -76,6 +82,7 @@
                                          - CGRectGetWidth(livesText.frame),
                                          CGRectGetMaxY(self.frame)
                                          - CGRectGetHeight(livesText.frame));
+        [self addChild:bg];
         [self addChild:ground];
         [self addChild:scoreText];
         [self addChild:livesText];
