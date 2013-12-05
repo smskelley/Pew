@@ -20,6 +20,7 @@
     Sprite *ground;
     SKLabelNode *scoreText;
     SKLabelNode *livesText;
+    SKColor *textColor;
     KeyStates *keyStates;
     int score;
     SKAction *playLossSound;
@@ -65,11 +66,15 @@
                                       [self minY] + [player height] / 2.0);
         player.lives = 10;
         player.maxSpeed = 8;
+        
+        // setup colors
+        textColor = [SKColor blueColor];
        
         // setup scoreText
         scoreText = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
         scoreText.fontSize = 65;
         scoreText.text = @"Score: 0";
+        scoreText.fontColor = textColor;
         scoreText.position = CGPointMake(CGRectGetMinX(self.frame) + 20
                                          + CGRectGetWidth(scoreText.frame) * .5,
                                          CGRectGetMaxY(self.frame)
@@ -77,6 +82,7 @@
         // setup livesText
         livesText = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
         livesText.fontSize = 65;
+        livesText.fontColor = textColor;
         livesText.text = [NSString stringWithFormat:@"Lives %d",player.lives];
         livesText.position = CGPointMake(CGRectGetMaxX(self.frame)
                                          - CGRectGetWidth(livesText.frame),
@@ -264,6 +270,7 @@
     SKLabelNode* gameOverText = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
     gameOverText.fontSize = 35;
     gameOverText.text = @"Game Over. Press Delete to Restart";
+    gameOverText.fontColor = textColor;
     gameOverText.position = CGPointMake(CGRectGetMidX(self.frame),
                                         CGRectGetMidY(self.frame));
     [self addChild:gameOverText];
