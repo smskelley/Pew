@@ -29,14 +29,20 @@
 }
 
 -(void) decideAndDoWithCurrentTime: (CFTimeInterval) currentTime {
-    // check if there's something to the right, if there is, try to fire
-    if ([self enemyIsSimilarAltitude])
-    {
+    // check if there's something to the right. If there's something to the right and it's either
+    // far away or close, fire. This tries to ensure we will have a bullet ready when we're close
+    // but still shoot when they're far away.
+    if ([self enemyIsSimilarAltitude] && ([self enemyIsClose] || ![self enemyIsFar]))
         [self fireRightWithCurrentTime:currentTime];
-        // if they're close, try to jump over
-        if ([self enemyIsClose])
-            [self jump];
-    }
+    
+    // if they're close, try to jump over
+    if ([self enemyIsClose] && [self enemyIsSimilarAltitude])
+        [self jump];
+    
+    // if they're far, maybe jump
+    if ([self enemyIsFar] && arc4random() % 20 == 0)
+        [self jump];
+    
 }
 
 -(void) addTarget: (Player *)newTarget {
@@ -52,6 +58,12 @@
     // half of our height.
     CGFloat dy = fabsf(CGRectGetMidY(self.frame) - CGRectGetMidY(target.frame));
     return dy <= (CGRectGetHeight(self.frame) / 2.0);
+}
+
+-(BOOL) enemyIsFar{
+    // find the x distance between. We are far if we're more than half a screen away.
+    CGFloat dx = fabsf(CGRectGetMidX(self.frame) - CGRectGetMidX(target.frame));
+    return dx <= (CGRectGetWidth(scene.frame) / 2.0);
 }
 
 -(BOOL) enemyIsClose {
