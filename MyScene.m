@@ -105,9 +105,6 @@
     enemy.maxSpeed = MIN(7.0, enemy.maxSpeed);
     enemy.bulletsPerSecond = MIN(3.0, enemy.bulletsPerSecond);
     enemySpawnTimeFrequency = MAX(0.7, enemySpawnTimeFrequency * 0.95);
-    
-    NSLog(@"#%d: maxSpeed: %f, bulletSpeed: %f, bulletsPerSecond: %f, frequency: %f",
-          enemiesSpawned, enemy.maxSpeed, enemy.bulletSpeed, enemy.bulletsPerSecond, enemySpawnTimeFrequency);
 }
 
 
@@ -164,8 +161,10 @@
         
         // Move all enemies
         [self enumerateChildNodesWithName:@"enemy" usingBlock:^(SKNode *enemy, BOOL *stop) {
-            [(Enemy*)enemy moveWithDeltaT:deltat];
-            [(Enemy*)enemy decideAndDoWithCurrentTime:lastUpdateTimeInterval];
+            if ([(Enemy*)enemy isAlive]) {
+                [(Enemy*)enemy moveWithDeltaT:deltat];
+                [(Enemy*)enemy decideAndDoWithCurrentTime:lastUpdateTimeInterval];
+            }
         }];
         
         if (lastSpawnTimeInterval + enemySpawnTimeFrequency < currentTime) {
@@ -181,7 +180,8 @@
     if (!self.paused) {
         [player applyGravityWithDeltaT:deltat];
         [self enumerateChildNodesWithName:@"enemy" usingBlock:^(SKNode *enemy, BOOL *stop) {
-            [(Enemy*)enemy applyGravityWithDeltaT:deltat];
+            if ([(Enemy*)enemy isAlive])
+                [(Enemy*)enemy applyGravityWithDeltaT:deltat];
         }];
     }
 }
@@ -196,8 +196,8 @@
             if (!CGRectIntersectsRect(enemy.frame, self.frame))
                 [enemy removeFromParent];
             // now check for collision
-            else if ([player isInFrame:enemy.frame]) {
-                [enemy removeFromParent];
+            else if ([player isInFrame:enemy.frame] && [(Enemy*)enemy isAlive]) {
+                [(Enemy*)enemy die];
                 [self incrementScore];
                 [player hitEnemy];
             }

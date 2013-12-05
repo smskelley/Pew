@@ -77,6 +77,10 @@
 
 -(void) die {
     alive = NO;
+    [self runAction:[SKAction sequence:@[[SKAction fadeOutWithDuration:0.5],
+                                         [SKAction removeFromParent]
+                                         ]]];
+                     
 }
 
 -(BOOL) isAlive {
