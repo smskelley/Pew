@@ -39,7 +39,7 @@
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.games</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.9</string>
+	<string>10.7</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2013 Sean Kelley. All rights reserved.</string>
 	<key>NSMainNibFile</key>
